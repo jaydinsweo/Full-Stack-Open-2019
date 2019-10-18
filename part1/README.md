@@ -78,3 +78,44 @@ rest; // [3,4,5,6]
 > rest and spread operators
 
 #### Objects
+
+One common way to define objects in JS is to use `object literals`, which
+listing its properties within braces.
+
+What is object literals? - is a way to define an object How does object literals
+define an object? - by using curly bracket, `{}`.
+
+```javascript
+const user = {
+	name: 'Tom',
+	age: '20',
+	education: 'MA',
+};
+```
+
+The values of the properties of an object can be any type. The properties
+referenced by using the `dot` notation or `bracket` notation.
+
+```javascript
+user.name; // "Tom"
+user[age]; // 20
+```
+
+#### Functions
+
+How a function can be referenced to?
+
+By giving a name in `function declaration` or define the function using a
+`function expression`.
+
+```javascript
+// function declaration
+function product(a, b) {
+	return a * b;
+}
+
+//function expression
+const product = function(a, b) {
+	return a * b;
+};
+```
