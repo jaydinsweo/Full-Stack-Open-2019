@@ -4,12 +4,12 @@ const Button = ({ onClick, text }) => (
 	<button onClick={onClick}> {text}</button>
 );
 
-const All = ({ good, neutral, bad }) => <p> all {good + neutral + bad}</p>;
-const Average = ({ good, neutral, bad }) => (
-	<p> average {(good - bad) / (good + neutral + bad)}</p>
-);
-const Positive = ({ good, neutral, bad }) => (
-	<p>positive {(good / (good + neutral + bad)) * 100}%</p>
+const Statistics = ({ good, neutral, bad }) => (
+	<div>
+		<p> all {good + neutral + bad}</p>
+		<p> average {(good - bad) / (good + neutral + bad)}</p>
+		<p>positive {(good / (good + neutral + bad)) * 100}%</p>
+	</div>
 );
 
 function App() {
@@ -27,9 +27,7 @@ function App() {
 			<p>good {good}</p>
 			<p>neutral {neutral}</p>
 			<p>bad {bad}</p>
-			<All good={good} neutral={neutral} bad={bad} />
-			<Average good={good} neutral={neutral} bad={bad} />
-			<Positive good={good} neutral={neutral} bad={bad} />
+			<Statistics good={good} neutral={neutral} bad={bad} />
 		</div>
 	);
 }
