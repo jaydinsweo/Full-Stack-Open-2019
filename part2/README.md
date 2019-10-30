@@ -18,7 +18,7 @@
 - When something does not work, log or use some other way of debugging.
 
 ```javascript
-console.log('props value is', props);
+console.log("props value is", props);
 ```
 
 #### JS arrays
@@ -49,7 +49,7 @@ a unique key value.
 
 ```javascript
 {
-	notes.map(note => <li key={note.id}>{note.content}</li>);
+  notes.map(note => <li key={note.id}>{note.content}</li>);
 }
 ```
 
@@ -93,6 +93,8 @@ array, resulting in a single output value.
 ## b. Forms
 
 ## c. Getting data from server
+
+`JSON server` generates fake REST API server for learning.
 
 ## d. Altering data in server
 
