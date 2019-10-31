@@ -96,6 +96,91 @@ array, resulting in a single output value.
 
 `JSON server` generates fake REST API server for learning.
 
+run `npx json-server --port 3001 --watch db.json` to running on port 3001. It will the data is int the json format when opens the `http://localhost:3001/notes`.
+
+The idea of server, in this practice is to save the notes to the server, json-server. The React code fetches the notes from the server and renders them to the screen. When a new notes added to the app, it will send to the server to update the json.
+
+##### The browsers as a runtime environment
+
+One way to fetch the data from the server is using `XMLHttpRequest`, HTTP request using XHR object. This technique introduced in 1999 and supported for a good while now. It is not recommended to use this technique anymore.
+
+`fetch` promise based function is standardized and support by all modern browser.
+
+`axios` library functions like `fetch` but it more pleasant to use. `npm i axios`.
+
+```node
+npm install axios --save
+npm install json-server --save-dev
+```
+
+`--save` installed as a runtime dependency of the application, because the execution of the program requires the existence of the library.
+
+`--save-dev` installed as a development dependency since the program itself doesn't require it, used for assistance during software development.
+
+#### Axios and promises
+
+`import` statement to bring the library into the React component.
+
+Axios method `get` returns a **promise**. A promise is an object representing the eventual completion or faulture of an async operation.It means a promise is an object that represent an async operation.
+
+- The promise is pending - the final value is not available yet.
+- The promise is fulfulled - is completed and final value is available - successful operation, aka _resolved_.
+- The promise is rejected - error in the
+
+If, and when, we want to access the result of the operation represented by the promise, we must register an event handler to the promise.
+
+```javascript
+const promise = axios.get("http://localhost:3001/notes");
+
+promise.then(response => {
+  console.log(response);
+});
+```
+
+JS calls the callback function registered by the `then` method providing it with a `response` object as a parameter.
+The `response` object contains all the essential data related to the respone of an HTTP GET request.
+
+Store the promise object in a variable is unnecessary, better to chain the `then` method call to the axios call.
+
+```javascript
+const promise = axios.get("http://localhost:3001/notes").then(response => {
+  const notes = response.data;
+  console.log(notes);
+});
+```
+
+#### Effect-hooks
+
+> The Effect Hooks lests you perform side effects in function components. Data fetching, setting up a subscription, and manually changing the DOM in React components are examples of side effects.
+
+```javascript
+import React, { useState, useEffect } from "react";
+```
+
+The effect is executed immediately after rendering.
+
+```javascript
+useEffect(() => {
+  console.log("effect");
+  axios.get("http://localhost:3001/notes").then(response => {
+    console.log("promise fulfilled");
+    setNotes(response.data);
+  });
+}, []);
+```
+
+When the data arrives from the server, the JS call the function registered as the event handler.
+
+The `useEffect` takes two parameters - the effect itself, and the empty array `[]` specify how oftern the effect is run.
+
+By default, effects run after every completed render.
+
+#### The development runtime enviroment
+
+The JavaScript code making up our React application is run in the browser. The browser gets the Javascript from the React dev server, which is the application that runs after running the command npm start. The dev-server transforms the JavaScript into a format understood by the browser. Among other things, it stitches together Javascript from different files into one file. We'll discuss the dev-server in more detail in part 7 of the course.
+
+The React application running in the browser fetches the JSON formatted data from json-server running on port 3001 on the machine. json-server gets its data from the file db.json.
+
 ## d. Altering data in server
 
 ## e. Adding styles to React app
