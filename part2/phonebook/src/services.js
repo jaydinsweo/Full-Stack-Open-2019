@@ -20,4 +20,10 @@ const update = async (id, newObject) => {
   return res;
 };
 
-export default { getAll, create, update };
+const deleteperson = async id => {
+  const request = axios.delete(`${baseUrl}/${id}`);
+  const res = await request;
+  return res;
+};
+
+export default { getAll, create, update, deleteperson };

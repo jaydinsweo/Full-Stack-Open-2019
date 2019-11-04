@@ -38,10 +38,19 @@ const PersonForm = ({ newInfo, setNewInfo, setPersons, persons }) => {
 
 const PersonInfo = ({ persons }) => {
   return persons.map(persona => (
-    <p key={persona.name}>
-      {persona.name}
-      {persona.number}
-    </p>
+    <div>
+      <p key={persona.name}>
+        {persona.name}
+        {persona.number}
+      </p>
+      <button
+        onClick={() => {
+          personServices.deleteperson(persona.id);
+        }}
+      >
+        delete
+      </button>
+    </div>
   ));
 };
 

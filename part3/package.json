@@ -1,0 +1,12 @@
+{
+  "name": "backend",
+  "version": "0.0.1",
+  "description": "Working toward implementing functionality on the server side of the stack. We will implement a simple REST API in Node.js by using the Express library and application'data will be stored in a MongoDB database.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT"
+}
