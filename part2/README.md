@@ -183,4 +183,42 @@ The React application running in the browser fetches the JSON formatted data fro
 
 ## d. Altering data in server
 
+In REST terminology, we refer to individual data objects such as the notes in application as _resources_. Each resources has a unique address associated with the URL.
+
+Resources are fetched from the server with HTTP GET requests.
+HTTP GET request to the URL notes/3 will return the note that has the id number 3.
+
+HTTP POST request is to create a new resource for storing a note.
+
+The new note consists of a new note object is returned by the backend server is added to the list of notes in the app's state.
+
+#### Extract backend into a separate module
+
+Create a src/services directory and a services.js file contains all the function that related to the server such as getAll, create, and update where it will fetch a GET or a POST HTTP request to the server.
+
+```javascript
+import axios from "axios";
+const baseUrl = "http://localhost:3001/notes";
+
+const getAll = () => {
+  return axios.get(baseUrl);
+};
+
+const create = newObject => {
+  return axios.post(baseUrl, newObject);
+};
+
+const update = (id, newObject) => {
+  return axios.put(`${baseUrl}/${id}`, newObject);
+};
+
+export default {
+  getAll: getAll,
+  create: create,
+  update: update
+};
+```
+
+The module returns an object that has three functions as its properties. The functions directly returned by the axios method.
+
 ## e. Adding styles to React app

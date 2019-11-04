@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import personServices from "./services";
 
 const PersonForm = ({ newInfo, setNewInfo, setPersons, persons }) => {
   const Submit = event => {
@@ -9,8 +9,11 @@ const PersonForm = ({ newInfo, setNewInfo, setPersons, persons }) => {
       name: newInfo.name,
       number: newInfo.number
     };
-    setPersons(persons.concat(addperson));
-    setNewInfo({ name: "", number: "" });
+
+    personServices.create().then(respone => {
+      setPersons(persons.concat(addperson));
+      setNewInfo({ name: "", number: "" });
+    });
   };
 
   const NameChange = event => {
@@ -47,7 +50,7 @@ const App = () => {
   const [newInfo, setNewInfo] = useState({ name: "", number: "" });
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then(respone => {
+    personServices.getAll().then(respone => {
       setPersons(respone.data);
     });
   }, []);
