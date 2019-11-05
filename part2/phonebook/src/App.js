@@ -5,15 +5,19 @@ const PersonForm = ({ newInfo, setNewInfo, setPersons, persons }) => {
   const Submit = event => {
     event.preventDefault();
 
-    const addperson = {
-      name: newInfo.name,
-      number: newInfo.number
-    };
+    if (persons.findIndex(person => person.name === newInfo.name) > -1) {
+      alert(`${newInfo.name} is already in the phonebook`);
+    } else {
+      const addperson = {
+        name: newInfo.name,
+        number: newInfo.number
+      };
 
-    personServices.create().then(respone => {
-      setPersons(persons.concat(addperson));
-      setNewInfo({ name: "", number: "" });
-    });
+      personServices.create().then(respone => {
+        setPersons(persons.concat(addperson));
+        setNewInfo({ name: "", number: "" });
+      });
+    }
   };
 
   const NameChange = event => {
