@@ -27,3 +27,5 @@ const port = 3001;
 app.listen(port);
 console.log(`Server running on port ${port}`);
 ```
+
+`http` is Node's built-in web server module. Using the `createServer` method of the http module to create a new web server. An event handler is registered to the server, that is called every time an HTTP request is made to the server's address.

@@ -1,66 +1,22 @@
 import React, { useState, useEffect } from "react";
 import personServices from "./services";
+import { PersonForm } from "./PersonForm";
+import { PersonInfo } from "./PersonInfo";
 
-const PersonForm = ({ newInfo, setNewInfo, setPersons, persons }) => {
-  const Submit = event => {
-    event.preventDefault();
-
-    if (persons.findIndex(person => person.name === newInfo.name) > -1) {
-      alert(`${newInfo.name} is already in the phonebook`);
-    } else {
-      const addperson = {
-        name: newInfo.name,
-        number: newInfo.number
-      };
-
-      personServices.create().then(respone => {
-        setPersons(persons.concat(addperson));
-        setNewInfo({ name: "", number: "" });
-      });
-    }
-  };
-
-  const NameChange = event => {
-    setNewInfo({ ...newInfo, name: event.target.value });
-  };
-  const NumberChange = event => {
-    setNewInfo({ ...newInfo, number: event.target.value });
-  };
-
+const Filter = () => {
   return (
-    <form onSubmit={Submit}>
-      <div>
-        name: <input value={newInfo.name} onChange={NameChange} />
-        number: <input value={newInfo.number} onChange={NumberChange} />
-      </div>
-      <div>
-        <button type="submit">add</button>
-      </div>
-    </form>
-  );
-};
-
-const PersonInfo = ({ persons }) => {
-  return persons.map(persona => (
     <div>
-      <p key={persona.name}>
-        {persona.name}
-        {persona.number}
-      </p>
-      <button
-        onClick={() => {
-          personServices.deleteperson(persona.id);
-        }}
-      >
-        delete
-      </button>
+      filter shown with <input />
     </div>
-  ));
+  );
 };
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newInfo, setNewInfo] = useState({ name: "", number: "" });
+  const [notification, setNotification] = useState({
+    message: null
+  });
 
   useEffect(() => {
     personServices.getAll().then(respone => {
@@ -68,10 +24,20 @@ const App = () => {
     });
   }, []);
 
+  const deletePerson = id => {
+    const person = persons.find(p => p.id === id);
+    const ok = window.confirm(`delete ${person.name}`);
+    if (ok) {
+      personServices.deleteperson(id).then(() => {
+        setPersons(persons.filter(p => p.id !== id));
+      });
+    }
+  };
+
   return (
     <div>
       <h2>Phonebook</h2>
-
+      <Filter />
       <h3>Add a new</h3>
       <PersonForm
         newInfo={newInfo}
@@ -81,7 +47,7 @@ const App = () => {
       />
 
       <h2> Numbers</h2>
-      <PersonInfo persons={persons} />
+      <PersonInfo persons={persons} deletePerson={deletePerson} />
     </div>
   );
 };
