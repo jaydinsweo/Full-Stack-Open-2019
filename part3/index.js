@@ -35,10 +35,19 @@ app.get("/info", (req, res) => {
   res.send(`<div> <p>${info} <p> <p>${Date()}<p></div>`);
 });
 
+// view each person info
 app.get("/api/persons/:id", (req, res) => {
   const id = Number(req.params.id);
   const person = persons.find(person => person.id === id);
   person ? res.json(person) : res.status(404).end();
+});
+
+// delete person
+app.delete("/api/persons/:id", (req, res) => {
+  const id = Number(req.params.id);
+  person = person.filter(person => person.id !== id);
+
+  res.status(204).end();
 });
 
 const port = 3001;

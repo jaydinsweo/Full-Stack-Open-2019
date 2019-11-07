@@ -78,3 +78,24 @@ Let's assume that the root URL of our service is www.example.com/api.
 This way of interpreting REST falls under the second level of RESTful maturity in the Richardson Maturity Model
 
 ## Fetch a single resource
+
+```javascript
+app.get("/notes/:id", (request, response) => {
+  const id = request.params.id;
+  const note = notes.find(note => note.id === id);
+  response.json(note);
+});
+```
+
+Difference between find and filter
+
+## Delete resources
+
+```javascript
+app.delete("/notes/:id", (request, response) => {
+  const id = Number(request.params.id);
+  notes = notes.filter(note => note.id !== id);
+
+  response.status(204).end();
+});
+```
