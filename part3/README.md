@@ -99,3 +99,33 @@ app.delete("/notes/:id", (request, response) => {
   response.status(204).end();
 });
 ```
+
+## Receiving data
+
+`body-parser` is a body parsing middleware.
+Parse imcoming request bodies in the a middleware before the handlers, available under the `req.body` property. It extract the entire body portion of an incoming request stream and exposes it on `req.body`.
+
+Import body-parse and implement an initial handler for dealing with the HTTP POST requests.
+
+```javascript
+const bodyParser = require("body-parser");
+
+app.use(bodyParser.json());
+```
+
+The middleware allows we can view the body property of the `request` object.
+
+```javascript
+app.post("/", (request, respone) => {
+  const note = request.body;
+  console.log(note);
+
+  respone.json(note);
+});
+```
+
+so whatever the request.body is it will return that.
+
+```javascript
+ { name: 'saod dsadw', number: '23123-231-12', id: 5 } //req.body
+```

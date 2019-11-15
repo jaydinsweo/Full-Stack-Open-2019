@@ -1,5 +1,10 @@
 const express = require("express");
 const app = express();
+const bodyParser = require("body-parser");
+
+// use middleware
+//
+app.use(bodyParser.json());
 
 let persons = [
   {
@@ -48,6 +53,28 @@ app.delete("/api/persons/:id", (req, res) => {
   person = person.filter(person => person.id !== id);
 
   res.status(204).end();
+});
+
+// add person
+const noteID = maxvalue => Math.floor(Math.random() * Math.floor(maxvalue));
+
+app.post("/api/persons", (req, res) => {
+  const body = req.body;
+  console.log(body.content);
+  if (!body.name) {
+    return res.status(400).json({
+      error: "content missing"
+    });
+  }
+  const person = {
+    name: body.name,
+    number: body.number,
+    id: noteID(5000)
+  };
+  console.log(person);
+
+  persons = persons.concat(person);
+  res.json(persons);
 });
 
 const port = 3001;
