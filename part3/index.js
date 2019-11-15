@@ -1,11 +1,20 @@
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
-
+const morgan = require("morgan");
 // use middleware
-//
 app.use(bodyParser.json());
 
+morgan.token(
+  "body",
+  (getID = req => {
+    return JSON.stringify(req.body);
+  })
+);
+
+app.use(
+  morgan(":method :url :status :response-time ms - :res[content-length] :body ")
+);
 let persons = [
   {
     name: "Arto Hellas",
@@ -60,14 +69,15 @@ const noteID = maxvalue => Math.floor(Math.random() * Math.floor(maxvalue));
 
 app.post("/api/persons", (req, res) => {
   const body = req.body;
-  const filter = persons.filter(person => person != req.name);
+
+  const filter = persons.filter(person => person.name === body.name);
 
   if (!body.name || !body.number) {
     return res.status(400).json({
       error: "content missing"
     });
   }
-  if (filter) {
+  if (filter.length != 0) {
     return res.status(400).json({
       error: "name must be unique"
     });
@@ -78,7 +88,6 @@ app.post("/api/persons", (req, res) => {
     number: body.number,
     id: noteID(5000)
   };
-  console.log(person);
 
   persons = persons.concat(person);
   res.json(persons);

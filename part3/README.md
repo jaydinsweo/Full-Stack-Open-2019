@@ -129,3 +129,19 @@ so whatever the request.body is it will return that.
 ```javascript
  { name: 'saod dsadw', number: '23123-231-12', id: 5 } //req.body
 ```
+
+## HTTP request types
+
+`HTTP standard` talks about two properties related to request types, **safety** and **idempotence**.
+
+HTTP GET request should be **safe** - GET or HEAD method **should not** have the significance of taking an action other than retrieval. These methods ought to be considered "safe".
+
+Safety means the executing request must not cause any side effects in thet server. In practice GET and HEAD does not return anything but the status code and respone headers. The respone body will not be returned.
+
+all other request **except** POST should be **idempotent** - if a request has side effects then the result should be same regardless.
+
+## Middleware
+
+Middlware are functions that can be used for handling `request` and `respone` objects.
+
+For example, the `body-parser` takes the raw data from the requests that stored in the `request` object, parses it into JS object and assign to `request` object as a new property _body_.
