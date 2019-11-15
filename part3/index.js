@@ -60,12 +60,19 @@ const noteID = maxvalue => Math.floor(Math.random() * Math.floor(maxvalue));
 
 app.post("/api/persons", (req, res) => {
   const body = req.body;
-  console.log(body.content);
-  if (!body.name) {
+  const filter = persons.filter(person => person != req.name);
+
+  if (!body.name || !body.number) {
     return res.status(400).json({
       error: "content missing"
     });
   }
+  if (filter) {
+    return res.status(400).json({
+      error: "name must be unique"
+    });
+  }
+
   const person = {
     name: body.name,
     number: body.number,
