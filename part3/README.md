@@ -145,6 +145,7 @@ all other request **except** POST should be **idempotent** - if a request has si
 Middlware are functions that can be used for handling `request` and `respone` objects.
 
 For example, the `body-parser` takes the raw data from the requests that stored in the `request` object, parses it into JS object and assign to `request` object as a new property _body_.
+<<<<<<< HEAD
 
 # b. Deploying app to internet
 
@@ -174,3 +175,5 @@ app.use(express.static("build"));
 ```
 
 whenever express get a GET request
+=======
+>>>>>>> parent of bd599d6... added cors and change baseUrl
