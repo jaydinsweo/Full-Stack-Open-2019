@@ -162,3 +162,15 @@ app.use(cors());
 ```
 
 ## Application to the internet
+
+## serving static files from the backend
+
+One option is to copy the production build to the root of the backend repo and config the backend to show the frontend main page as its main page.
+
+To make express show static content and page's JS - need a built-in middleware from express called static and declare
+
+```javascript
+app.use(express.static("build"));
+```
+
+whenever express get a GET request
