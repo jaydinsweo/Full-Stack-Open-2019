@@ -2,9 +2,10 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
+const cors = require("cors");
 // use middleware
 app.use(bodyParser.json());
-
+app.use(cors());
 morgan.token(
   "body",
   (getID = req => {
@@ -93,6 +94,6 @@ app.post("/api/persons", (req, res) => {
   res.json(persons);
 });
 
-const port = 3001;
+const port = process.env.PORT || 3001;
 app.listen(port);
 console.log(`Server running on port ${port}`);

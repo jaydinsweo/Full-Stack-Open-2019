@@ -145,3 +145,20 @@ all other request **except** POST should be **idempotent** - if a request has si
 Middlware are functions that can be used for handling `request` and `respone` objects.
 
 For example, the `body-parser` takes the raw data from the requests that stored in the `request` object, parses it into JS object and assign to `request` object as a new property _body_.
+
+# b. Deploying app to internet
+
+## Same origin policty and CORS
+
+CORS is a mechanism that allows restricted resources (e.g. fonts) on the web page to be requested from another domain outside of the domain that the first resource was served.
+
+By default, JS code runs in a browser can only communicate with a server in the same origin. So our frontend runs in port 3000 while server runs in different port 3001 - they don't have the same origin.
+
+Can allow requests from other origins by using `cors middleware`.
+
+```javascript
+const cors = require("cors");
+app.use(cors());
+```
+
+## Application to the internet
