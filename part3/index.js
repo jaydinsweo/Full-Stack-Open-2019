@@ -1,48 +1,31 @@
+require("dotenv").config();
+
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const cors = require("cors");
+const Person = require("./model/person");
 
 // use middleware
 app.use(bodyParser.json());
 app.use(cors());
 app.use(express.static("build"));
+
 morgan.token(
   "body",
   (getID = req => {
     return JSON.stringify(req.body);
   })
 );
-
 app.use(
   morgan(":method :url :status :response-time ms - :res[content-length] :body ")
 );
-let persons = [
-  {
-    name: "Arto Hellas",
-    number: "040-123456",
-    id: 1
-  },
-  {
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-    id: 2
-  },
-  {
-    name: "Dan Abramov",
-    number: "12-43-234345",
-    id: 3
-  },
-  {
-    name: "asdq",
-    number: "-2323-232-3",
-    id: 4
-  }
-];
 
 app.get("/api/persons", (req, res) => {
-  res.json(persons);
+  Person.find({}).then(person => {
+    res.json(person.map(p => p.toJSON()));
+  });
 });
 
 app.get("/info", (req, res) => {
@@ -75,7 +58,7 @@ app.post("/api/persons", (req, res) => {
 
   const filter = persons.filter(person => person.name === body.name);
 
-  if (!body.name || !body.number) {
+  if (body.content === undefined) {
     return res.status(400).json({
       error: "content missing"
     });
@@ -88,14 +71,13 @@ app.post("/api/persons", (req, res) => {
 
   const person = {
     name: body.name,
-    number: body.number,
-    id: noteID(5000)
+    number: body.number
   };
 
-  persons = persons.concat(person);
-  res.json(persons);
+  person.save().then(savedP => res.json(savedP.toJSON()));
 });
 
 const port = 3001;
-app.listen(port);
-console.log(`Server running on port ${port}`);
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});

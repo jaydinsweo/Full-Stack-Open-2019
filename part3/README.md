@@ -201,3 +201,13 @@ Note.find({}).then(result => {
 ```
 
 The object are retrieved from the database with the `find` method of the `Note` model. The parameter `{}` of the method is an object expressing search conditions. Since the parameter is `{}` is empty - we get all the notes stored in the `notes` collection.
+
+## Backend connected to a database
+
+First thing needed is to use the enviroment variables, by using `dotenv` package.
+
+```javascript
+require("dotenv").config();
+```
+
+Add this line in the `index.js` to ensure the env variables from `.env` file are available globally.
