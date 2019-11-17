@@ -29,7 +29,12 @@ const errorHandler = (error, req, res, next) => {
 
   if (err.name === "CastError" && err.kind === "ObjectId") {
     return res.status(400).send({ err: "malformatted id" });
+  } else if (err.name === "ValidationError") {
+    return res.status(400).json({
+      err: err.message
+    });
   }
+
   next(err);
 };
 
@@ -45,9 +50,7 @@ app.get("/api/persons", (req, res) => {
 
 // update info ---- NEXT CHANGE ---------
 app.get("/info", (req, res) => {
-  const count = Person.countDocuments({});
-
-  const info = `Phonebook has info for ${count} people`;
+  const info = `Phonebook has info for ${Person.countDocuments()} people`;
 
   res.send(`<div> <p>${info} <p> <p>${Date()}<p></div>`);
 });
@@ -73,19 +76,18 @@ app.delete("/api/persons/:id", (req, res) => {
 });
 
 // Add new person --------------
-app.post("/api/persons", (req, res) => {
+app.post("/api/persons", (req, res, next) => {
   const body = req.body;
 
-  if (body.name === undefined) {
-    return res.status(400).json({
-      error: "content missing"
-    });
-  }
   const person = new Person({
     name: body.name,
     number: body.number
   });
-  person.save().then(savedP => res.json(savedP.toJSON()));
+
+  person
+    .save()
+    .then(savedP => res.json(savedP.toJSON()))
+    .catch(err => next(err));
 });
 
 // update each person info -------------------

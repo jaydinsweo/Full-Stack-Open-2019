@@ -311,3 +311,29 @@ app.delete("/api/notes/:id", (request, response, next) => {
 ```
 
 HTTP PUT request method creates a new resource or update existing resource - goes along with `findByIdAndUpdate` method.
+
+---
+
+# Validation and Eslint
+
+There are constraint that we want to apply to the data that is stored in our app database such that not accept entry that have a missing property. For example,
+
+```javascript
+app.post("/api/notes", (request, response) => {
+  const body = request.body;
+  if (body.content === undefined) {
+    return response.status(400).json({ error: "content missing" });
+  }
+  // ...
+});
+```
+
+One smarter way is to use **validation** functionality available in Mongoose. We can define specific validation rules for each field in the schema as
+
+```javascript
+const noteSchema = new mongoose.Schema({
+  content: { type: String, minlength: 5, required: true },
+  date: { type: Date, required: true },
+  important: Boolean
+});
+```
