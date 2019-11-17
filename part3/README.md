@@ -213,3 +213,101 @@ require("dotenv").config();
 Add this line in the `index.js` to ensure the env variables from `.env` file are available globally.
 
 One way to format the objects returned by Mongoose is to modify the `toJSON` method of the objects.
+
+---
+
+## Error handling
+
+If we try to visit the url of a person http://localhost:3001/api/persons/:id
+
+```javascript
+http://localhost:3001/api/persons/5dd1205a82b4e1dc6189a37e
+```
+
+then we can extract the content with that id. However if the id isn't there, the server seem to be 'stuck' since the server never responds to the request.
+
+The request has failed and the associated promise has been rejected. Hence we need to handling error
+
+```javascript
+app.get("/api/persons/:id", (req, res) => {
+  Person.findById(req.params.id)
+    .then(person => {
+      res.json(person.toJSON());
+    })
+    .catch(err => {
+      console.log("error in", err);
+      res.status(404).end();
+    });
+});
+```
+
+When refesh the page, the page will respone a blank page.
+
+## Moving error handling into the middleware
+
+It is better to implement all error handling in a single place. This can be particularly useful if we later on want to report data related to errors to an external error tracking system such as Sentry.
+
+for example, the error forward with the `next` function. The next function is passed to the handler as the third parameter
+
+```javascript
+app.get("/api/notes/:id", (request, response, next) => {
+  Note.findById(request.params.id)
+    .then(note => {
+      if (note) {
+        response.json(note.toJSON());
+      } else {
+        response.status(404).end();
+      }
+    })
+    .catch(error => next(error));
+});
+```
+
+The error passed forward is given to the `next` function as a parameter.
+
+If `next` was called without a parameter, then the execution simply move onto the next route or middleware.
+
+If `next` was call with a parameter, then the execution will continue to the _error handler middleware_.
+
+Express `error handlers` are middleware that are defined with a function that accepts `four paramters`.
+
+So if the error was passed to the `next` function, it will be handled by the built-in error handler .
+
+```javascript
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message);
+
+  if (error.name === "CastError" && error.kind === "ObjectId") {
+    return response.status(400).send({ error: "malformatted id" });
+  }
+
+  next(error);
+};
+
+app.use(errorHandler);
+```
+
+## The order of middleware loading
+
+1. express build
+2. bodyParsers json
+3. logger
+4. HTTP POST/GET requests
+5. handler of unknown endpoints
+6. handler of requests with results to errrors
+
+## Other operations
+
+HTTP delete is to use `findByIdAndRemove` method.
+
+```javascript
+app.delete("/api/notes/:id", (request, response, next) => {
+  Note.findByIdAndRemove(request.params.id)
+    .then(result => {
+      response.status(204).end();
+    })
+    .catch(error => next(error));
+});
+```
+
+HTTP PUT request method creates a new resource or update existing resource - goes along with `findByIdAndUpdate` method.
