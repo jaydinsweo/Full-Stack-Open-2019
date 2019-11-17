@@ -211,3 +211,5 @@ require("dotenv").config();
 ```
 
 Add this line in the `index.js` to ensure the env variables from `.env` file are available globally.
+
+One way to format the objects returned by Mongoose is to modify the `toJSON` method of the objects.

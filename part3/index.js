@@ -35,14 +35,14 @@ app.get("/info", (req, res) => {
   res.send(`<div> <p>${info} <p> <p>${Date()}<p></div>`);
 });
 
-// view each person info
+// view each person info ---------------
 app.get("/api/persons/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const person = persons.find(person => person.id === id);
-  person ? res.json(person) : res.status(404).end();
+  Person.findById(req.params.id).then(person => {
+    res.json(person.toJSON());
+  });
 });
 
-// delete person
+// delete person ------------------
 app.delete("/api/persons/:id", (req, res) => {
   const id = Number(req.params.id);
   person = person.filter(person => person.id !== id);
@@ -50,30 +50,20 @@ app.delete("/api/persons/:id", (req, res) => {
   res.status(204).end();
 });
 
-// add person
-const noteID = maxvalue => Math.floor(Math.random() * Math.floor(maxvalue));
-
+// Add new person --------------
 app.post("/api/persons", (req, res) => {
   const body = req.body;
-
-  const filter = persons.filter(person => person.name === body.name);
+  console.log("req", req);
 
   if (body.content === undefined) {
     return res.status(400).json({
       error: "content missing"
     });
   }
-  if (filter.length != 0) {
-    return res.status(400).json({
-      error: "name must be unique"
-    });
-  }
-
-  const person = {
+  const person = new Person({
     name: body.name,
     number: body.number
-  };
-
+  });
   person.save().then(savedP => res.json(savedP.toJSON()));
 });
 
