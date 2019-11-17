@@ -145,7 +145,6 @@ all other request **except** POST should be **idempotent** - if a request has si
 Middlware are functions that can be used for handling `request` and `respone` objects.
 
 For example, the `body-parser` takes the raw data from the requests that stored in the `request` object, parses it into JS object and assign to `request` object as a new property _body_.
-<<<<<<< HEAD
 
 # b. Deploying app to internet
 
@@ -174,6 +173,31 @@ To make express show static content and page's JS - need a built-in middleware f
 app.use(express.static("build"));
 ```
 
-whenever express get a GET request
-=======
->>>>>>> parent of bd599d6... added cors and change baseUrl
+# C - Saving data to MongoDB
+
+## Schema
+
+```javascript
+const noteSchema = new mongoose.Schema({
+  content: String,
+  date: Date,
+  important: Boolean
+});
+
+const Note = mongoose.model("Note", noteSchema);
+```
+
+The schema define how the objects are to be stored in the database. The document databases are schemaless - database itself does not care about the structure of the data that is stored in the database.
+
+## Fetching objects from database
+
+```javascript
+Note.find({}).then(result => {
+  result.forEach(note => {
+    console.log(note);
+  });
+  mongoose.connection.close();
+});
+```
+
+The object are retrieved from the database with the `find` method of the `Note` model. The parameter `{}` of the method is an object expressing search conditions. Since the parameter is `{}` is empty - we get all the notes stored in the `notes` collection.
