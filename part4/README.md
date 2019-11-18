@@ -140,3 +140,44 @@ The structure of project following Node.js best practices.
 
   module.exports = mongoose.model("Note", noteSchema);
   ```
+
+---
+
+## Testing Node applications
+
+First, unit tests - write a couple of simple functions.
+
+```javascript
+const palindrome = string => {
+  return string
+    .split("")
+    .reverse()
+    .join("");
+};
+
+const average = array => {
+  const reducer = (sum, item) => {
+    return sum + item;
+  };
+
+  return array.reduce(reducer, 0) / array.length;
+};
+
+module.exports = {
+  palindrome,
+  average
+};
+```
+
+Install Jest, a testing library for React `npm i --save-dev jest`.
+We also need to specify the execution environment in the `package.json`
+
+```javascript
+{ //...
+	"jest": {
+   	"testEnvironment": "node"
+ 	}
+}
+```
+
+To test our code, need to create a new file `xxx.test.js`.
