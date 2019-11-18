@@ -181,3 +181,36 @@ We also need to specify the execution environment in the `package.json`
 ```
 
 To test our code, need to create a new file `xxx.test.js`.
+
+For the palindrome function aboves
+
+```javascript
+const palindrome = require("../utils/for_testing").palindrome;
+
+test("palindrome of a", () => {
+  const result = palindrome("a");
+
+  expect(result).toBe("a");
+});
+
+test("palindrome of react", () => {
+  const result = palindrome("react");
+
+  expect(result).toBe("tcaer");
+});
+
+test("palindrome of releveler", () => {
+  const result = palindrome("releveler");
+
+  expect(result).toBe("releveler");
+});
+```
+
+The test file imports the function to be tested and assigns it to the variable. Each individual test cases are defined with the `test` or `it` function.
+
+The first parameter of the function is the test description as a string.
+
+The second parameter is the function that defines the functionality for the test case.
+
+- First we execute the code to be tested
+- Second we verify the results with the expect function. By expect wraps the resulting value into an object that offers a collection of _matcher_ function.

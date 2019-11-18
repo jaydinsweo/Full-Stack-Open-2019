@@ -88,3 +88,44 @@ describe("total likes", () => {
     expect(result).toBe(36);
   });
 });
+
+describe("favorite blog that has the most likes", () => {
+  const listWithOneBlog = [
+    {
+      title: "Canonical string reduction",
+      author: "Edsger W. Dijkstra",
+      likes: 12
+    }
+  ];
+  const listWithManyBlog = [
+    {
+      title: "React patterns",
+      author: "Michael Chan",
+      likes: 7
+    },
+    {
+      title: "Go To Statement Considered Harmful",
+      author: "Edsger W. Dijkstra",
+      likes: 5
+    },
+    {
+      title: "Canonical string reduction",
+      author: "Edsger W. Dijkstra",
+      likes: 12
+    },
+    {
+      title: "First class tests",
+      author: "Robert C. Martin",
+      likes: 10
+    }
+  ];
+
+  it("most fav blog of list of one blog", () => {
+    const result = listHelper.favoriteBlog(listWithOneBlog);
+    expect(result).toBe(12);
+  });
+  it("most fav from the list of many blogs", () => {
+    const result = listHelper.favoriteBlog(listWithManyBlog);
+    expect(result).toBe(12);
+  });
+});
