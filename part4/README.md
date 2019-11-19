@@ -214,3 +214,233 @@ The second parameter is the function that defines the functionality for the test
 
 - First we execute the code to be tested
 - Second we verify the results with the expect function. By expect wraps the resulting value into an object that offers a collection of _matcher_ function.
+
+---
+
+## Test environment
+
+The convention in Node is to define the execution mode of the application with the `NODE_ENV` environment variable.
+
+```javascript
+  "scripts": {
+    "start": "NODE_ENV=production node index.js",
+    "watch": "NODE_ENV=development nodemon index.js",
+    "test": "NODE_ENV=test jest --verbose --runInBand"
+  }
+```
+
+We can change the `NODE_ENV` value by set it in the `package.json` script.
+
+The `runInBand` option will prevent Jest from running tests in parallel.
+
+To test using a database, the optimal solution is to have every test execution use its own separate database.
+
+```javascript
+// in utils/config.js
+
+require("dotenv").config();
+
+let PORT = process.env.PORT;
+let MONGODB_URI = process.env.MONGODB_URI;
+
+if (process.env.NODE_ENV === "test") {
+  MONGODB_URI = process.env.TEST_MONGODB_URI;
+}
+module.exports = {
+  MONGODB_URI,
+  PORT
+};
+```
+
+## supertest
+
+`supertest` - testing the API.
+`npm i --save-dev supertest` - install supertest package.
+
+In `tests/node_api.test.js`, this test will verifies the request is responded with status 200 and its header is set to application/json, indicating the data is in the desired format.
+
+```javascript
+const mongoose = require("mongoose");
+const supertest = require("supertest");
+const app = require("../app");
+
+const api = supertest(app);
+
+test("notes are returned as json", async () => {
+  await api
+    .get("/api/notes")
+    .expect(200)
+    .expect("Content-Type", /application\/json/);
+});
+
+afterAll(() => {
+  mongoose.connection.close();
+});
+```
+
+The test import from the `app.js` module and wrap with the supertest function into a **superagent** object.
+
+The supertest takes care the application being tested is started at the port that it use internally - so there is no need to test the `index.js` where its purpose is to launch the application at specificed port with `http` object.
+
+```javascript
+test("there are four notes", async () => {
+  const response = await api.get("/api/notes");
+
+  expect(response.body.length).toBe(4);
+});
+
+test("the first note is about HTTP methods", async () => {
+  const response = await api.get("/api/notes");
+
+  expect(response.body[0].content).toBe("HTML is easy");
+});
+```
+
+These two tests verifyy the format and content of the respone data with the `expect` method.
+
+`async/await` syntax - better than use callback functions to access the data returned by promises.
+
+## logger
+
+`logger` middleware output the infomation about the http requests is **obstructing** the test execution output.
+
+To prevent the logging when app is in the test mode, extract console log into its own `utils/logger.js` module.
+
+By separate into two functions.
+
+- `info` function not print anything if it is in the test mode.
+- `error` function intented for error logging will still print to console in test mode.
+
+```javascript
+const info = (...params) => {
+  if (process.env.NODE_ENV !== "test") {
+    console.log(...params);
+  }
+};
+
+const error = (...params) => {
+  console.error(...params);
+};
+
+module.exports = {
+  info,
+  error
+};
+```
+
+For example, in the `app.js` module
+
+```javascript
+const logger = require("./utils/logger");
+logger.info("connecting to", config.MONGODB_URI);
+mongoose
+  .connect(config.MONGODB_URI, { useNewUrlParser: true })
+  .then(() => {
+    logger.info("connected to MongoDB");
+  })
+  .catch(error => {
+    logger.error("error connection to MongoDB:", error.message);
+  });
+```
+
+## Initializing the database before tests
+
+Test should not depend on the state of the database.
+
+We need to reset the database and generate the needed test data in a controlled manner before we run the tests.
+
+To initialise the database **before every test** - use `beforeEach` function:
+
+```javascript
+const mongoose = require("mongoose");
+const supertest = require("supertest");
+const app = require("../app");
+const api = supertest(app);
+const Note = require("../models/note");
+
+const initialNotes = [{}];
+
+beforeEach(async () => {
+  await Note.deleteMany({});
+
+  let noteObject = new Note(initialNotes[0]);
+  await noteObject.save();
+
+  noteObject = new Note(initialNotes[1]);
+  await noteObject.save();
+});
+```
+
+The database is cleared out at the beginning `.deleteMany({})` method, and saved two notes in the initialNotes to the database.
+This will ensure the same state before every test is run.
+
+Then in our test,
+
+```javascript
+test("all notes are returned", async () => {
+  const response = await api.get("/api/notes");
+
+  expect(response.body.length).toBe(initialNotes.length);
+});
+
+test("a specific note is within the returned notes", async () => {
+  const response = await api.get("/api/notes");
+
+  const contents = response.body.map(r => r.content);
+  expect(contents).toContain("Browser can execute only Javascript");
+});
+```
+
+The `toContain` method is used to checking the note given to it as a parameter is in the list of notes returned by the API.
+
+## Running tests one by one
+
+To run tests with a specific name:
+
+```javascript
+jest -t "notes"
+```
+
+## async/await
+
+`async/await` was introduced in ES7 for **asynchronous functions that return a promise**.
+
+In previous version, the `find` method returns a promise and we can access the result of the operation by registering a callback function with the `then` method.
+
+```javascript
+Note.find({})
+  .then(notes => {
+    return notes[0].remove();
+  })
+  .then(response => {
+    console.log("the first note is removed");
+    // more code here
+  });
+```
+
+The `async` and `await` keywords make the code more synctactically cleaner.
+
+```javascript
+const main = async () => {
+  const notes = await Note.find({});
+  console.log("operation returned the following notes", notes);
+
+  const response = await notes[0].remove();
+  console.log("the first note is removed");
+};
+
+main();
+```
+
+In order to use the `await` operator with async operations, they have to return a promsie. Using await is possible only inside of an async function.
+
+## async/await in the backend
+
+```javascript
+notesRouter.get("/", async (request, response) => {
+  const notes = await Note.find({});
+  response.json(notes.map(note => note.toJSON()));
+});
+```
+
+## More tests and refactoring the backend
