@@ -47,3 +47,7 @@ describe("test http post request", () => {
     expect(contents).toContain("Hello");
   });
 });
+
+afterAll(() => {
+  mongoose.connection.close();
+});

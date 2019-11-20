@@ -41,4 +41,32 @@ Router.post("/", async (req, res, next) => {
   }
 });
 
+Router.delete("/:id", async (req, res, next) => {
+  try {
+    await Blog.findByIdAndRemove(req.params.id);
+    res.status(204).end();
+  } catch (exception) {
+    next(exception);
+  }
+});
+
+Router.put("/:id", async (req, res, next) => {
+  const body = req.body;
+  const blog = {
+    title: body.title,
+    author: body.author,
+    url: body.url,
+    likes: body.likes
+  };
+
+  try {
+    const updateblog = await Blog.findByIdAndUpdate(req.params.id, blog, {
+      new: true
+    });
+    res.json(updateblog.toJSON());
+  } catch (exception) {
+    next(exception);
+  }
+});
+
 module.exports = Router;
