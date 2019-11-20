@@ -444,3 +444,109 @@ notesRouter.get("/", async (request, response) => {
 ```
 
 ## More tests and refactoring the backend
+
+When code get refactored, will be the risk of regression - existing functionality may break.
+
+For HTTP POST request - verify amount of notes returned by the API increases and new added object is in the list. - Also verify object without content did not added to the database.
+
+```javascript
+test("note without content is not added", async () => {
+  const newNote = {
+    important: true
+  };
+
+  await api
+    .post("/api/notes")
+    .send(newNote)
+    .expect(400);
+
+  const response = await api.get("/api/notes");
+
+  expect(response.body.length).toBe(initialNotes.length);
+});
+```
+
+We can extract these steps into helpfer function - `/tests/test_helper.js`
+
+```javascript
+const Note = require("../models/note");
+
+const initialNotes = [
+  {
+    content: "HTML is easy",
+    important: false
+  },
+  {
+    content: "Browser can execute only Javascript",
+    important: true
+  }
+];
+
+const nonExistingId = async () => {
+  const note = new Note({ content: "willremovethissoon" });
+  await note.save();
+  await note.remove();
+
+  return note._id.toString();
+};
+
+const notesInDb = async () => {
+  const notes = await Note.find({});
+  return notes.map(note => note.toJSON());
+};
+
+module.exports = {
+  initialNotes,
+  nonExistingId,
+  notesInDb
+};
+```
+
+The module defines the `notesInDb` function use for checking the notes stored in the database.
+
+The `initialNotes` array contains the initial database state.
+
+Moreover, we can also use the `async/await` for our route handler such as
+
+```javascript
+notesRouter.post("/", async (request, response, next) => {
+  const body = request.body;
+
+  const note = new Note({
+    content: body.content,
+    important: body.important === undefined ? false : body.important,
+    date: new Date()
+  });
+
+  const savedNote = await note.save();
+  response.json(savedNote.toJSON());
+});
+```
+
+## Error handling and async/await
+
+To deal with exception with async/await is to use `try/catch` mechanism
+
+```javascript
+notesRouter.post("/", async (request, response, next) => {
+  const body = request.body;
+
+  const note = new Note({
+    content: body.content,
+    important: body.important === undefined ? false : body.important,
+    date: new Date()
+  });
+  try {
+    const savedNote = await note.save();
+    response.json(savedNote.toJSON());
+  } catch (exception) {
+    next(exception);
+  }
+});
+```
+
+## Refactoring tests
+
+Test coverage.
+
+Problem: some requests like GET and DELETE /api/notes/:id aren't tested when the requrest is sent with an invalid id.
